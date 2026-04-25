@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Történelem Flashkártyák</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf9f6;
+    --bg2: #f2f0eb;
+    --bg3: #e8e5de;
+    --text: #1a1917;
+    --text2: #5c5a55;
+    --text3: #9a9890;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --purple-bg: #EEEDFE;
+    --purple: #3C3489;
+    --purple-dark: #26215C;
+    --teal-bg: #E1F5EE;
+    --teal: #0F6E56;
+    --coral-bg: #FAECE7;
+    --coral: #993C1D;
+    --green-bg: #EAF3DE;
+    --green: #3B6D11;
+    --amber-bg: #FAEEDA;
+    --amber: #854F0B;
+    --blue-bg: #E6F1FB;
+    --blue: #185FA5;
+    --red: #A32D2D;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1b18;
+      --bg2: #252420;
+      --bg3: #2e2c28;
+      --text: #f0ede6;
+      --text2: #a8a59e;
+      --text3: #6b6965;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.15);
+      --purple-bg: #26215C;
+      --purple: #AFA9EC;
+      --purple-dark: #CECBF6;
+      --teal-bg: #04342C;
+      --teal: #5DCAA5;
+      --coral-bg: #4A1B0C;
+      --coral: #F0997B;
+      --green-bg: #173404;
+      --green: #97C459;
+      --amber-bg: #412402;
+      --amber: #EF9F27;
+      --blue-bg: #042C53;
+      --blue: #85B7EB;
+      --red: #F09595;
+    }
+  }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 780px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .site-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .site-sub {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 3px;
+    font-style: italic;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--border2);
+    background: transparent;
+    font-size: 12px;
+    font-family: 'Source Serif 4', serif;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tab.active {
+    background: var(--purple);
+    color: var(--purple-bg);
+    border-color: var(--purple);
+  }
+  .tab:hover:not(.active) {
+    background: var(--bg2);
+    color: var(--text);
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 99;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--purple);
+    transition: width 0.4s ease;
+  }
+
+  main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 1.25rem;
+  }
+
+  .stat-box {
+    background: var(--bg2);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+
+  .card-counter {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
+  .flashcard-wrap {
+    perspective: 1200px;
+    margin: 0 auto 1.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .flashcard {
+    position: relative;
+    width: 100%;
+    min-height: 280px;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 14px;
+  }
+
+  .flashcard.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    inset: 0;
+    min-height: 280px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 14px;
+    padding: 1.75rem;
+    border: 1px solid var(--border2);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-front { background: var(--bg); }
+  .card-back {
+    background: var(--bg2);
+    transform: rotateY(180deg);
+  }
+
+  .card-spacer { min-height: 280px; pointer-events: none; visibility: hidden; }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+    font-family: 'Source Serif 4', serif;
+  }
+  .badge-free    { background: var(--purple-bg); color: var(--purple); }
+  .badge-cued    { background: var(--teal-bg);   color: var(--teal); }
+  .badge-error   { background: var(--coral-bg);  color: var(--coral); }
+  .badge-recognition { background: var(--green-bg); color: var(--green); }
+  .badge-chrono  { background: var(--amber-bg);  color: var(--amber); }
+
+  .card-question {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.55;
+    flex: 1;
+    white-space: pre-wrap;
+  }
+
+  .flip-hint {
+    font-size: 12px;
+    color: var(--text3);
+    text-align: center;
+    margin-top: 1.5rem;
+    font-style: italic;
+  }
+
+  .answer-label {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.75rem;
+  }
+
+  .card-answer {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.75;
+    flex: 1;
+  }
+  .card-answer ul { padding-left: 1.25rem; }
+  .card-answer li { margin-bottom: 5px; }
+  .card-answer strong { font-weight: 500; }
+
+  .tip-box {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--coral-bg);
+    border-left: 3px solid var(--coral);
+    border-radius: 0 8px 8px 0;
+    font-size: 12px;
+    color: var(--coral);
+    font-style: italic;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .btn {
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: var(--bg);
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--bg2); }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary { background: var(--purple); color: var(--purple-bg); border-color: var(--purple); }
+  .btn-primary:hover { background: var(--purple-dark); }
+  .btn-success { background: var(--teal); color: var(--teal-bg); border-color: var(--teal); }
+  .btn-danger  { background: var(--coral); color: var(--coral-bg); border-color: var(--coral); }
+
+  .end-screen {
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+  .end-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    margin-bottom: 0.5rem;
+  }
+  .end-sub { color: var(--text2); font-size: 14px; margin-bottom: 1.5rem; }
+
+  .notice {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text3);
+    font-style: italic;
+    min-height: 18px;
+  }
+
+  @media (max-width: 500px) {
+    .site-title { font-size: 18px; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .card-question { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="site-title">Történelem Flashkártyák</div>
+      <div class="site-sub">Angol polgárháború · Felvilágosodás · Francia forradalom · USA</div>
+    </div>
+    <div class="tabs" id="tabs"></div>
+  </div>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<main>
+  <div class="stats-row" id="stats-row"></div>
+  <div class="card-counter" id="card-counter"></div>
+
+  <div class="flashcard-wrap" id="card-wrap">
+    <div class="flashcard" id="flashcard">
+      <div class="card-face card-front" id="front-face"></div>
+      <div class="card-face card-back"  id="back-face"></div>
+    </div>
+    <div class="card-spacer" id="card-spacer"></div>
+  </div>
+
+  <div id="end-screen" style="display:none"></div>
+
+  <div class="controls" id="controls"></div>
+  <div class="notice" id="notice"></div>
+</main>
+
+<script>
+const ALL_CARDS = [
+  {id:1,type:'free',q:'Milyen társadalmi rétegek támogatták a parlamentet I. Károly ellen az angol polgárháborúban, és miért?',a:'<ul><li><strong>Gentry</strong> (vállalkozó nemesség) és <strong>yeomanry</strong> (módosabb parasztság)</li><li>Puritán eszmeiség kötötte össze őket → kálvini elvek, anglikán egyház megtisztítása</li><li>Ellenezték I. Károly önkényes, katolikusbarát politikáját</li></ul>',tip:'Sokan csak „a parlament" kifejezést használják, nem azonosítják a konkrét társadalmi rétegeket.'},
+  {id:2,type:'free',q:'Milyen lépésekben jutott Cromwell és a parlament az I. Károly kivégzéséig?',a:'<ul><li>Parlamenti erők fegyvert fognak a király ellen</li><li>Cromwell megalakítja a „vasbordájú szentek" seregét</li><li>Királyi csapatok felmorzsolva → I. Károly fogságba kerül</li><li>Szökési kísérlet + újabb csatavesztés</li><li>Parlament 1649-ben kivégezteti → köztársaság jön létre</li></ul>',tip:'A fogság és a kivégzés közé sok tanuló nem illeszti be a szökési kísérletet.'},
+  {id:3,type:'free',q:'Hogyan különbözött Cromwell diktatúrája a hagyományos monarchiától? Miért nem lett király?',a:'<ul><li>Hadseregre támaszkodó, diktatórikus eszközökkel irányított</li><li>Híveiből álló Államtanács rendeleteket hozhatott → parlament háttérbe szorult</li><li>Azért nem lett király, mert a köztársaság kivívását <em>isteni elrendelésnek</em> tekintette</li><li>Hite szerint Isten kiválasztott népe felett nem uralkodhat senki</li></ul>',tip:'Sokan azt feltételezik, hogy egyszerűen „szerény volt" – valójában teológiai meggyőződés állt mögötte.'},
+  {id:4,type:'free',q:'Mi volt a „dicsőséges forradalom", és miért kapta ezt a nevet?',a:'<ul><li>1688: a parlament Orániai Vilmost (II. Jakab vejét) hívta meg a trónra</li><li>II. Jakab elmenekült → vér nélkül ment végbe</li><li>„Dicsőséges" = erőszak nélküli hatalomváltás</li><li>Előzménye: II. Jakab franciabarát politikája, jezsuiták megjelenése</li></ul>',tip:'Sokan összekeverik az 1649-es köztársaság kikiáltásával.'},
+  {id:5,type:'free',q:'Mit mondott ki az 1689-es angol Jognyilatkozat? Nevezz meg legalább 5 rendelkezést!',a:'<ul><li>Törvények felfüggesztése parlamenti hozzájárulás nélkül → törvényellenes</li><li>Állandó hadsereg békeidőben → csak parlamenttel</li><li>Szabad parlamenti választás joga</li><li>Parlamenti szólásszabadság</li><li>Bíráskodás függetlensége</li><li>Parlament gyakori összehívása</li></ul>',tip:'A felfüggesztési jog és a törvényektől való „eltekintés" közti különbséget kevesen hangsúlyozzák.'},
+  {id:6,type:'free',q:'Miért volt korlátozott a választójog az angol alkotmányos monarchiában? Ki szavazhatott?',a:'<ul><li>Magas vagyoni cenzus → csak a legmagasabb adófizetők szavazhattak</li><li>A társadalom nagy többsége ki volt zárva</li><li>Nyílt korrupció, vesztegetés, hivatalok osztogatása jellemezte a törvényhozást</li><li>A győztes párt vezetőjét a király kérte fel miniszterelnöknek</li></ul>',tip:'Az alkotmányos monarchia ≠ demokrácia. A demokrácia csak fokozatosan alakult ki.'},
+  {id:7,type:'free',q:'Miért robbant ki konfliktus a brit anyaország és a tizenhárom észak-amerikai gyarmat között? Emlékezz vissza legalább 4 intézkedésre!',a:'<ul><li>A hétéves háború (1756–1763) adósságait a gyarmatokkal akarták megfizettetni</li><li>1764 cukortörvény, 1765 bélyegtörvény, 1765 elszállásolási törvény, 1773 teatörvény</li><li>Jelszó: <strong>„Nincs adózás képviselet nélkül!"</strong></li><li>Gyarmatoknak nem volt képviselőjük a londoni parlamentben</li></ul>',tip:null},
+  {id:8,type:'free',q:'Miért szenvedett vereséget Nagy-Britannia a függetlenségi háborúban? Sorolj fel legalább 4 okot!',a:'<ul><li>1777 saratogai győzelem → Franciaország, Spanyolország, Hollandia belép a háborúba</li><li>Brit flotta nehezen tudta ellátni az óceánon túl harcoló csapatokat</li><li>Amerikaiak jól ismerték a hadszínteret, gerilla-hadviselés</li><li>Hatalmas terep: kommunikáció nehézkes</li><li>1781 yorktowni csata: bekerítés, fegyverletétel</li></ul>',tip:null},
+  {id:9,type:'free',q:'Milyen elvek alapján működik az USA alkotmánya? Magyarázd el a „fékek és ellensúlyok" rendszerét!',a:'<ul><li>Montesquieu-féle hatalommegosztás: törvényhozó (Kongresszus), végrehajtó (elnök), bírói (Legfelsőbb Bíróság)</li><li>A testületek kölcsönösen ellenőrzik egymást</li><li>Elnök: közvetett választás, 4 évre, de a Kongresszus és a LB korlátozhatja</li><li>LB: elnök nevezi ki, Szenátus megerősíti, tagok élethosszig</li></ul>',tip:null},
+  {id:10,type:'free',q:'Milyen tudományos forradalom ment végbe a 16–17. században? Sorolj fel legalább 4 tudóst és felfedezésük lényegét!',a:'<ul><li><strong>Kopernikusz</strong> (1543): heliocentrikus világkép</li><li><strong>Kepler</strong>: bolygók pályáinak törvényei (ellipszis)</li><li><strong>Galilei</strong>: Föld keringése, szabadesés törvénye, Hold felszíne</li><li><strong>Newton</strong>: gravitáció, tehetetlenség törvénye, dinamika alaptörvénye</li></ul>',tip:'Sokan „felcserélik" Keplert és Galileit, vagy Newtont Galileihez sorolják.'},
+  {id:11,type:'free',q:'Miben különbözött Montesquieu és Rousseau állam- és demokráciaelmélete?',a:'<ul><li><strong>Montesquieu:</strong> hatalmi ágak szétválasztása, közvetett demokrácia, vagyoni cenzus elfogadása</li><li><strong>Rousseau:</strong> népfelség elve, közvetlen demokrácia, általános akarat, hatalommegosztás felesleges</li><li>Rousseau: „kényszeríteni kell, hogy szabad legyen" → veszélyes lehetőség</li><li>Montesquieu: a bírói hatalmat is el kell választani</li></ul>',tip:null},
+  {id:12,type:'free',q:'Mi volt a Bastille elfoglalásának valódi és szimbolikus jelentősége 1789-ben?',a:'<ul><li><strong>Valójában:</strong> lőporraktár, csak 7 foglyot őrzött (köztük hamisítók, őrültek), lebontásra tervezett erőd</li><li><strong>Szimbolikusan:</strong> a régi rend, a zsarnokság börtönének tekintették</li><li>Párizs ostromlói lőporért indultak el, nem politikai foglyokért</li><li>A forradalmi legendagyártás tette „rettegett börtönné"</li></ul>',tip:'⚠️ Sokan azt hiszik, hogy politikai foglyokat szabadítottak ki – ez nem igaz!'},
+  {id:13,type:'free',q:'Miért torkollott a francia forradalom jakobinus diktatúrába?',a:'<ul><li><strong>Külső:</strong> 1792-től háború (Ausztria, Poroszország, majd Anglia, Spanyolország), katonai veszteségek</li><li><strong>Belső:</strong> hátországi kényszersorozás, rekvirálás → vendée-i parasztfelkelés</li><li><strong>Politikai:</strong> girondisták vs. jakobinusok harca, gyanakvás</li><li>Hegypárt 1793 júniusában népi mozgalomra támaszkodva átvette a hatalmat</li></ul>',tip:null},
+  {id:14,type:'free',q:'Hogyan értékelte Bibó István a jakobinus terrort?',a:'<ul><li>A terror a forradalom „zsákutcája és csődje"</li><li>Nem volt szükségszerű – csak eltúlzott célokat kitűző forradalomhoz kell terror</li><li>Két terméketlen embertípust hozott létre: a „hivatásos reakcióst" és a „hivatásos forradalmárt"</li><li>Európa-szerte rémületessé tette az egyébként szimpatikusan fogadott forradalmat</li></ul>',tip:null},
+  {id:15,type:'free',q:'Mi volt a Code Civil (Polgári Törvénykönyv) jelentősége? Milyen elveket tartalmazott, és milyen ellentmondásai voltak?',a:'<ul><li>1804: egységes, minden állampolgárra alkalmazható törvénygyűjtemény</li><li>Törvény előtti egyenlőség, egyéni szabadságjogok</li><li><strong>Ellentmondás:</strong> apai tekintély rögzítése, nők alárendelt helyzete (nem rendelkezhettek vagyonnal)</li><li>Napóleon a meghódított területeken is bevezette → felgyorsította a polgári értékrend terjedését</li></ul>',tip:null},
+  {id:16,type:'free',q:'Milyen elvek mentén szervezték újra Európát a bécsi kongresszuson (1814–1815)?',a:'<ul><li><strong>Legitimizmus:</strong> a jogszerű, dinasztikus uralom visszaállítása</li><li><strong>Európai egyensúly:</strong> egyik hatalom se erősödjön meg túlzottan</li><li>1789 szellemiségének eltörlése, forradalmi eszmék elfojtása</li><li>Lengyelország nem állt helyre; Német Szövetség ~40 tagállam; Itália visszaosztva</li></ul>',tip:'A bécsi kongresszus elveit és a Szent Szövetség céljait ne keverd össze – összefüggnek, de különálló intézmények.'},
+  {id:17,type:'cued',q:'Egy 1650-ben Londonban élő kereskedő ezt írja naplójába: „Cromwell nem lett király, mégis királyként viselkedik." Miben van igaza, és miben téved?',a:'<ul><li><strong>Igaza van:</strong> diktatórikus eszközök, hadseregre támaszkodás, Államtanács rendeleti úton irányít, parlament félreáll</li><li><strong>Téved:</strong> Cromwell elvből nem jelöltette magát királynak – teológiai meggyőződés vezette, nem hatalomvágy</li></ul>',tip:null},
+  {id:18,type:'cued',q:'Egészítsd ki! „A ______ forradalom vér nélkül zajlott le 1688-ban. A ______ által aláírt ______ (1689) az alkotmányos monarchia alapjait rakta le. A törvényhozói hatalom jogilag a ______ kezébe került."',a:'<ul><li><strong>dicsőséges</strong> forradalom</li><li><strong>Orániai Vilmos</strong> által aláírt <strong>Jognyilatkozat</strong> (1689)</li><li>A törvényhozói hatalom jogilag a <strong>parlament</strong> kezébe került</li></ul>',tip:null},
+  {id:19,type:'cued',q:'Azonosítsd, melyik elem hiányzik!\nHétéves háború → britek kiszorítják a franciákat → [?] → „Nincs adózás képviselet nélkül!" → Bostoni teadélután',a:'<p>A londoni parlament a <strong>háborús kiadásokat a gyarmatokkal akarta megfizettetni</strong> → adóintézkedések sorozata (cukortörvény, bélyegtörvény stb.)</p>',tip:null},
+  {id:20,type:'cued',q:'Adam Smith szerint egy „______ kéz" rendezi el a piacot. Mit értett ez alatt? Mi az állam szerepe Smith felfogásában?',a:'<ul><li><strong>Láthatatlan kéz</strong> = a kereslet-kínálat erői automatikusan egyensúlyra hozzák a piacot</li><li>Az egyéni önző érdek → végső soron a közjót szolgálja</li><li>Állam: csak jog és biztonság fenntartása + közszolgáltatások → minimális beavatkozás</li></ul>',tip:null},
+  {id:21,type:'cued',q:'Párosítsd a filozófust az elvével!\n(A) Locke · (B) Montesquieu · (C) Rousseau · (D) Voltaire\n(1) Hatalmi ágak szétválasztása (2) Társadalmi szerződés, polgári szabadságjogok (3) Népfelség elve, közvetlen demokrácia (4) Egyházellenesség, deizmus',a:'<ul><li><strong>A–2:</strong> Locke → Társadalmi szerződés, tulajdon védelme, polgári szabadságjogok</li><li><strong>B–1:</strong> Montesquieu → Hatalmi ágak szétválasztása és közvetett demokrácia</li><li><strong>C–3:</strong> Rousseau → Népfelség elve, általános akarat, közvetlen demokrácia</li><li><strong>D–4:</strong> Voltaire → Egyházellenesség, deizmus, „Tiporjátok el a gyalázatost!"</li></ul>',tip:null},
+  {id:22,type:'error',q:'Egy diák ezt írja: „A Függetlenségi nyilatkozat kimondta az emberek egyenlőségét, beleértve a rabszolgákat is." Mi a hibás ebben az állításban?',a:'<ul><li>Jefferson és kortársai szándékosan nem vetették fel a rabszolgakérdést</li><li>A „minden ember egyenlőnek teremtetett" elv <strong>NEM terjedt ki</strong> a fekete rabszolgákra</li><li>A rabszolgaság fennmaradt, az egyenjogúsítás csak a polgárháború után (1865) következett be</li></ul>',tip:null},
+  {id:23,type:'cued',q:'Miért volt Napóleon hatalma „sebezhető"? Mit mondott Metternichnek, és mit jelent ez?',a:'<ul><li>Metternichnek mondta: „Az ön uralkodói megengedhetik maguknak, hogy hússzor is megverjék őket… én nem."</li><li>Napóleon illegitim úton szerezte meg a hatalmat (nem dinasztikus örökség)</li><li>Uralma a katonai sikereken alapult → egyetlen döntő vereség az egész rendszert összeomlasztotta</li></ul>',tip:null},
+  {id:24,type:'cued',q:'Döntsd el, melyik állítás melyik eszmeáramlatra jellemző!\n(a) „A hagyományokat beépítve kell reformálni"\n(b) „Az egyéni szabadságjogok elsődlegesek"\n(c) „A közös identitás és a nemzeti múlt feltárása a cél"\n(d) Vagyoni cenzushoz kötött választójog\n(e) Mérsékelt, fontolva haladó változtatás',a:'<ul><li>(a) → <strong>konzervativizmus</strong></li><li>(b) → <strong>liberalizmus</strong></li><li>(c) → <strong>nacionalizmus</strong></li><li>(d) → <strong>liberalizmus</strong></li><li>(e) → <strong>konzervativizmus</strong></li></ul>',tip:null},
+  {id:25,type:'cued',q:'1793-as párizsi polgár szomszédját feljelentette valaki. A szomszéd nem tagja semmilyen politikai szervezetnek. A „gyanúsakról szóló törvény" alapján letartóztatható-e?',a:'<ul><li><strong>Igen, letartóztatható</strong> – gyanús mindenki, aki „viselkedésével, kapcsolataival, beszédével" a zsarnokság hívének mutatkozik</li><li>Elegendő az egyszerű feljelentés, bizonyíték nem szükséges</li><li>Az ügyvédi védelemtől is megfoszthatták a vádlottakat</li></ul>',tip:null},
+  {id:26,type:'error',q:'Egy diák ezt mondja: „A felvilágosodás azt hirdette, hogy Isten nem létezik." Mi a pontatlanság ebben?',a:'<ul><li>A legtöbb felvilágosult gondolkodó <strong>deista</strong> volt, nem ateista</li><li>Deizmus: Isten megalkotta a világot, de a mindennapi életbe nem avatkozik bele</li><li>Ateizmusig csak kevés filozófus jutott el</li><li>Voltaire maga mondta: „Ha Isten nem volna, ki kellene találni"</li></ul>',tip:null},
+  {id:27,type:'error',q:'Egy diák azt állítja: „A bécsi kongresszus visszaállította a régi, napoleoni háborúk előtti Európát teljes egészében." Miben téved?',a:'<ul><li>Nem állt helyre Lengyelország (a három dinasztia megtartotta területeit)</li><li>Itáliában az egységes állam helyett visszatért a széttagoltság, de határok módosultak</li><li>Anglia új területeket szerzett (Málta, Ceylon)</li><li>A Habsburg és orosz területek is nőttek → nem azonos a napoleoni előtti helyzettel</li></ul>',tip:null},
+  {id:28,type:'error',q:'Miért helytelen azt mondani, hogy a jakobinus diktatúra a „nép nevében" a nép érdekét védte?',a:'<ul><li>A jakobinusok felfüggesztették az eredeti forradalmi szabadságjogokat</li><li>Kisebbség erőszakkal valósított meg elveket a többség akarata ellenére</li><li>Bibó: ez a 20. századi totális diktatúrák előképe</li><li>Az 1793-as „jakobinus alkotmány" jogokat ígért – de soha nem vezették be</li></ul>',tip:null},
+  {id:29,type:'recognition',q:'Ki volt Oliver Cromwell?\n(A) Skót király, aki leverte a puritánokat\n(B) Parlamenti képviselő, aki megszervezte a „vasbordájú szentek" seregét\n(C) Orániai Vilmos tanácsadója a dicsőséges forradalomban\n(D) Az anglikán egyház megalapítója',a:'<p><strong>Helyes válasz: (B)</strong></p><p>Addig ismeretlen parlamenti képviselő volt, aki megalakította a „vasbordájú szentek" seregét és vezette a parlament erőit I. Károly ellen.</p>',tip:null},
+  {id:30,type:'recognition',q:'Mit jelent az „elektorok" szava az USA elnökválasztási rendszerében?\n(A) A Legfelsőbb Bíróság tagjai\n(B) A tagállamok által küldött választók, akik ténylegesen megválasztják az elnököt\n(C) A Szenátus tagjai\n(D) Az elnökjelöltek kampánycsapata',a:'<p><strong>Helyes válasz: (B)</strong></p><p>Az állampolgárok az elnökjelöltre szavaznak, de az <strong>elektorok</strong> választják meg ténylegesen. Ez a közvetett választás lényege.</p>',tip:null},
+  {id:31,type:'recognition',q:'Melyik dokumentum mondta ki először az ember „elidegeníthetetlen jogait" az élethez, a szabadsághoz és a boldogság kereséséhez?\n(A) Az angol Jognyilatkozat (1689)\n(B) Az Emberi és polgári jogok nyilatkozata (1789)\n(C) Az Amerikai Függetlenségi nyilatkozat (1776)\n(D) Az USA alkotmányának első kiegészítése (1791)',a:'<p><strong>Helyes válasz: (C)</strong> – Az Amerikai Függetlenségi nyilatkozat (1776)</p>',tip:null},
+  {id:32,type:'recognition',q:'A Code Civil melyik elvet vezette be egységesen?\n(A) Rendi különbségek jogi rögzítése\n(B) Törvény előtti egyenlőség minden állampolgár számára\n(C) A nők egyenjogúsítása\n(D) Köztársasági kormányforma kötelező bevezetése',a:'<p><strong>Helyes válasz: (B)</strong></p><p>⚠️ B és C összekeverése tipikus hiba: a Code Civil <strong>NEM</strong> terjesztette ki a nők egyenjogúságát!</p>',tip:null},
+  {id:33,type:'cued',q:'Húzd meg az összefüggést! Miért vezet egyenesen az alábbi sor a forradalomhoz?\nHáborús adósságok → [?] → [?] → Bastille ostroma (1789)',a:'<ul><li>Háborús adósságok → XVI. Lajos reformokat sürget (közteherviselés)</li><li>Nemesség ellenállása → rendi gyűlés összehívása (1789)</li><li>Harmadik rend felkelése → párizsi nyugtalanság + katonai összevonás</li><li>→ Bastille ostroma</li></ul>',tip:null},
+  {id:34,type:'cued',q:'Kösd össze a „szabadság, egyenlőség, testvériség" jelszó egyes elemeit azzal az eszmeáramlattal, amelyik a 19. században leginkább magáévá tette!',a:'<ul><li><strong>Szabadság</strong> → liberalizmus (egyéni szabadságjogok)</li><li><strong>Egyenlőség</strong> → szocializmus/kommunizmus (gazdasági egyenlőség)</li><li><strong>Testvériség/Közösség</strong> → nacionalizmus (a nemzet mint testvéri közösség)</li></ul>',tip:null},
+  {id:35,type:'cued',q:'Egy 18. századi francia olvasó kezébe kerül az Enciklopédia. Miért volt ez önmagában forradalmi tett a korban?',a:'<ul><li>A középkori gondolkodás szerint a világ teljes leírása elképzelhetetlen volt</li><li>Az Enciklopédia összefoglalta és <strong>elérhetővé tette a tudást</strong></li><li>A Szentszék indexre tette → tiltott könyv, mégis egész Európában elterjedt</li><li>Üzenete: az értelem mindenki számára hozzáférhető, nem csak az egyházi tudósok privilégiuma</li></ul>',tip:null},
+  {id:36,type:'chrono',q:'Sorold fel időrendben az angol polgári forradalom 5 legfontosabb eseményét (évszámmal)!',a:'<ul><li><strong>1649</strong> – I. Károly kivégzése, köztársaság</li><li><strong>1658</strong> – Cromwell halála, hatalmi válság</li><li><strong>1660</strong> – Stuart-restauráció (II. Károly)</li><li><strong>1688</strong> – Dicsőséges forradalom (Orániai Vilmos)</li><li><strong>1689</strong> – Jognyilatkozat → alkotmányos monarchia</li></ul>',tip:null},
+  {id:37,type:'chrono',q:'Sorold fel időrendben az USA születésének 5 kulcseseményét (évszámmal)!',a:'<ul><li><strong>1773</strong> – Bostoni teadélután</li><li><strong>1775</strong> – Függetlenségi háború kezdete</li><li><strong>1776</strong> – Függetlenségi nyilatkozat (július 4.)</li><li><strong>1783</strong> – Párizsi béke (függetlenség elismerése)</li><li><strong>1787</strong> – USA alkotmánya / <strong>1789</strong> – Washington első elnöksége</li></ul>',tip:null},
+  {id:38,type:'chrono',q:'Napóleon bukásának főbb állomásai – sorold fel időrendben!',a:'<ul><li><strong>1812</strong> – Oroszországi hadjárat katasztrófája</li><li><strong>1813</strong> – Lipcsei csata („népek csatája"), vereség</li><li><strong>1814</strong> – Lemondás, száműzetés Elba szigetére</li><li><strong>1815</strong> – Visszatérés → „száznapos uralom"</li><li><strong>1815</strong> – Waterlooi csata → Szent Ilona szigete</li></ul>',tip:null}
+];
+
+const TYPES = {
+  all:         { label: 'Mind (38)', filter: () => true },
+  free:        { label: 'Szabad visszaidézés', filter: c => c.type==='free' },
+  cued:        { label: 'Irányított', filter: c => c.type==='cued' },
+  error:       { label: 'Tévképzet-javítás', filter: c => c.type==='error' },
+  recognition: { label: 'Felismerés', filter: c => c.type==='recognition' },
+  chrono:      { label: 'Kronológia', filter: c => c.type==='chrono' }
+};
+
+const BADGE = {
+  free:        ['badge-free','Szabad visszaidézés'],
+  cued:        ['badge-cued','Irányított visszaidézés'],
+  error:       ['badge-error','Tévképzet-javítás'],
+  recognition: ['badge-recognition','Felismerés'],
+  chrono:      ['badge-chrono','Kronológia']
+};
+
+let state = { tab:'all', deck:[], idx:0, flipped:false, known:new Set(), unknown:new Set() };
+
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function buildDeck() {
+  state.deck = shuffle(ALL_CARDS.filter(TYPES[state.tab].filter));
+  state.idx = 0; state.flipped = false;
+  state.known.clear(); state.unknown.clear();
+}
+
+function renderTabs() {
+  const el = document.getElementById('tabs');
+  el.innerHTML = '';
+  Object.entries(TYPES).forEach(([k,{label}]) => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (state.tab===k?' active':'');
+    b.textContent = label;
+    b.onclick = () => { state.tab=k; buildDeck(); render(); };
+    el.appendChild(b);
+  });
+}
+
+function renderStats() {
+  const total = state.deck.length;
+  const pct = total>0 ? Math.round((state.idx/total)*100) : 0;
+  document.getElementById('progress').style.width = pct+'%';
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-lbl">Összes</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--teal)">${state.known.size}</div><div class="stat-lbl">Tudtam</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--coral)">${state.unknown.size}</div><div class="stat-lbl">Nem tudtam</div></div>
+    <div class="stat-box"><div class="stat-num">${total - state.known.size - state.unknown.size}</div><div class="stat-lbl">Hátra van</div></div>
+  `;
+}
+
+function renderCard() {
+  const card = state.deck[state.idx];
+  if(!card) return;
+  const [bc,bl] = BADGE[card.type];
+  const fc = document.getElementById('flashcard');
+  fc.className = 'flashcard'+(state.flipped?' flipped':'');
+
+  document.getElementById('front-face').innerHTML = `
+    <span class="badge ${bc}">${bl}</span>
+    <div class="card-question">${card.q.replace(/\n/g,'<br>')}</div>
+    <div class="flip-hint">Kattints a kártyára a válaszért ↩</div>
+  `;
+
+  let back = `<div class="answer-label">Helyes válasz</div><div class="card-answer">${card.a}</div>`;
+  if(card.tip) back += `<div class="tip-box">⚠️ Tipikus hiba: ${card.tip}</div>`;
+  document.getElementById('back-face').innerHTML = back;
+
+  // sync spacer height after paint
+  requestAnimationFrame(() => {
+    const front = document.getElementById('front-face');
+    const bk = document.getElementById('back-face');
+    const h = Math.max(front.scrollHeight, bk.scrollHeight, 280);
+    document.getElementById('card-spacer').style.minHeight = h+'px';
+    fc.style.minHeight = h+'px';
+    front.style.minHeight = h+'px';
+    bk.style.minHeight = h+'px';
+  });
+}
+
+function renderControls() {
+  const total = state.deck.length;
+  const ctrl = document.getElementById('controls');
+  const end  = document.getElementById('end-screen');
+  const wrap = document.getElementById('card-wrap');
+  const ctr  = document.getElementById('card-counter');
+  const notice = document.getElementById('notice');
+
+  if(state.idx >= total) {
+    wrap.style.display = 'none';
+    ctr.textContent = '';
+    notice.textContent = '';
+    ctrl.innerHTML = `<button class="btn btn-primary" onclick="buildDeck();render()">↺ Újra keverés</button>`;
+    const pct = total>0 ? Math.round((state.known.size/total)*100) : 0;
+    end.style.display = 'block';
+    end.innerHTML = `
+      <div class="end-title">Pakli végére értél! 🎉</div>
+      <div class="end-sub">Sikerarány: ${state.known.size} / ${total} kártya (${pct}%)</div>
+    `;
+    return;
+  }
+
+  end.style.display = 'none';
+  wrap.style.display = 'block';
+  ctr.textContent = `${state.idx+1} / ${total} kártya`;
+  notice.textContent = '';
+
+  if(!state.flipped) {
+    ctrl.innerHTML = `<button class="btn" onclick="buildDeck();render()">↺ Újra kever</button>`;
+  } else {
+    ctrl.innerHTML = `
+      <button class="btn btn-danger"  onclick="markCard(false)">✗ Nem tudtam</button>
+      <button class="btn btn-success" onclick="markCard(true)">✓ Tudtam</button>
+    `;
+  }
+}
+
+function markCard(knew) {
+  const card = state.deck[state.idx];
+  if(knew) state.known.add(card.id); else state.unknown.add(card.id);
+  state.idx++; state.flipped = false;
+  render();
+}
+
+function render() {
+  renderTabs();
+  renderStats();
+  if(state.idx < state.deck.length) renderCard();
+  renderControls();
+}
+
+document.getElementById('flashcard').addEventListener('click', () => {
+  if(state.idx >= state.deck.length) return;
+  state.flipped = !state.flipped;
+  renderCard();
+  renderControls();
+});
+
+buildDeck();
+render();
+</script>
+</body>
+</html>
